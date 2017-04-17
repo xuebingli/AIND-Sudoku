@@ -1,3 +1,6 @@
+DIGITS = '123456789'
+ROWS = 'ABCDEFGHI'
+
 assignments = []
 
 def assign_value(values, box, value):
@@ -29,7 +32,7 @@ def naked_twins(values):
 
 def cross(A, B):
     "Cross product of elements in A and elements in B."
-    pass
+    return [a + b for a in A for b in B]
 
 def grid_values(grid):
     """
@@ -41,7 +44,9 @@ def grid_values(grid):
             Keys: The boxes, e.g., 'A1'
             Values: The value in each box, e.g., '8'. If the box has no value, then the value will be '123456789'.
     """
-    pass
+    squares = cross(ROWS, DIGITS)
+    possibility_grid = [DIGITS if d == '.' else d for d in list(grid)]
+    return dict(zip(squares, possibility_grid))
 
 def display(values):
     """
