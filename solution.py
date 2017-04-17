@@ -54,7 +54,13 @@ def display(values):
     Args:
         values(dict): The sudoku in dictionary form
     """
-    pass
+    values_list = sorted(list(values.items()))
+    digits_list = [ds for _, ds in values_list]
+    rows = [digits_list[i: i + 9] for i in range(0, 81, 9)]
+    for row in rows:
+        for digits in row:
+            print('%-10s' % (digits), end='')
+        print()
 
 def eliminate(values):
     pass
