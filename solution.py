@@ -109,11 +109,40 @@ def only_choice(values):
                 assign_value(values, s, d)
     return values
 
+def solved_square_count(values):
+    return len([s for s, ds in values.items() if len(ds) == 1])
+
+def is_unsolvable(values):
+    return any(len(ds) == 0 for ds in values.values())
+
 def reduce_puzzle(values):
-    pass
+    keep_reducing = True
+    while keep_reducing:
+        solved_square_count_before = solved_square_count(values)
+        values = eliminate(values)
+        values = only_choice(values)
+        solved_square_count_after = solved_square_count(values)
+        keep_reducing = solved_square_count_before < solved_square_count_after
+    return values
+
+def is_solved(values):
+    return all(len(ds) == 1 for ds in values.values())
+
+def unsolved_square_with_least_possibilities(values):
+    _, square = min([(len(ds), s) for s, ds in values.items() if len(ds) > 1])
+    return square
 
 def search(values):
-    pass
+    values = reduce_puzzle(values)
+    if is_solved(values): return values
+    elif is_unsolvable(values): return False
+    else:
+        s = unsolved_square_with_least_possibilities(values)
+        for d in values[s]:
+            possible_values = values.copy()
+            assign_value(possible_values, s, d)
+            answer_values = search(possible_values)
+            if answer_values: return answer_values
 
 def solve(grid):
     """
@@ -124,6 +153,7 @@ def solve(grid):
     Returns:
         The dictionary representation of the final sudoku grid. False if no solution exists.
     """
+    return search(grid_values(grid))
 
 if __name__ == '__main__':
     diag_sudoku_grid = '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
