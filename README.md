@@ -3,11 +3,11 @@
 
 # Question 1 (Naked Twins)
 Q: How do we use constraint propagation to solve the naked twins problem?  
-A: *Student should provide answer here*
+A: The constraint in use is, if a pair of naked twins exist, their digits cannot appear in their peers. This constraint reduces the number of possibilities in the said peers, thus reducing search space.
 
 # Question 2 (Diagonal Sudoku)
 Q: How do we use constraint propagation to solve the diagonal sudoku problem?  
-A: *Student should provide answer here*
+A: The constraint in use is that numbers are unique on the two main diagonals. This constraint reduces the number of possibilities of squares on diagonals, thus reducing search space.
 
 ### Install
 
