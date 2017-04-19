@@ -32,6 +32,9 @@ def assign_value(values, box, value):
         assignments.append(values.copy())
     return values
 
+def are_twins(s1, s2):
+    return s1[0] == s2[0] or s1[1] == s2[1] or unit_of_square(s1) == unit_of_square(s2)
+
 def naked_twins(values):
     """Eliminate values using the naked twins strategy.
     Args:
@@ -40,9 +43,16 @@ def naked_twins(values):
     Returns:
         the values dictionary with the naked twins eliminated from peers.
     """
-
     # Find all instances of naked twins
+    two_digits_squares = [s for s, ds in values.items() if len(ds) == 2]
+    naked_twins = [(t1, t2) for t1 in two_digits_squares for t2 in two_digits_squares
+                   if t1 > t2 and values[t1] == values[t2] and are_twins(t1, t2)]
     # Eliminate the naked twins as possibilities for their peers
+    for (t1, t2) in naked_twins:
+        overlapping_peers = [p1 for p1 in peers(t1) for p2 in peers(t2) if p1 == p2]
+        for p in overlapping_peers:
+            assign_value(values, p, ''.join([d for d in values[p] if d not in values[t1]]))
+    return values
 
 def grid_values(grid):
     """
