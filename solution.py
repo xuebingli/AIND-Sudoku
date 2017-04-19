@@ -1,5 +1,19 @@
 DIGITS = '123456789'
 ROWS = 'ABCDEFGHI'
+COLS = '123456789'
+
+def cross(A, B):
+    "Cross product of elements in A and elements in B."
+    return [a + b for a in A for b in B]
+
+def in_three(items):
+    return [items[i:i+3] for i in range(0, len(items), 3)]
+
+SQUARES = cross(ROWS, COLS)
+TOP_DIAGONAL = list(filter(lambda s: ROWS.index(s[0]) == COLS.index(s[1]), SQUARES))
+BOTTOM_DIAGONAL = list(filter(lambda s: ROWS.index(s[0]) + COLS.index(s[1]) == 8, SQUARES))
+COLS_IN_THREE = in_three(COLS)
+ROWS_IN_THREE = in_three(ROWS)
 
 assignments = []
 
@@ -30,10 +44,6 @@ def naked_twins(values):
     # Find all instances of naked twins
     # Eliminate the naked twins as possibilities for their peers
 
-def cross(A, B):
-    "Cross product of elements in A and elements in B."
-    return [a + b for a in A for b in B]
-
 def grid_values(grid):
     """
     Convert grid into a dict of {square: char} with '123456789' for empties.
@@ -44,9 +54,8 @@ def grid_values(grid):
             Keys: The boxes, e.g., 'A1'
             Values: The value in each box, e.g., '8'. If the box has no value, then the value will be '123456789'.
     """
-    squares = cross(ROWS, DIGITS)
     possibility_grid = [DIGITS if d == '.' else d for d in list(grid)]
-    return dict(zip(squares, possibility_grid))
+    return dict(zip(SQUARES, possibility_grid))
 
 def display(values):
     """
@@ -63,7 +72,32 @@ def display(values):
         print()
 
 def eliminate(values):
-    pass
+    for s in values.keys():
+        for p in peers(s):
+            if len(values[p]) == 1: # the peer is solved
+                assign_value(values, s, values[s].replace(values[p], ''))
+    return values
+
+def peers(square):
+    """
+    Find all peers for a given square.
+    """
+    row, col = square
+    in_same_row = [row + c for c in COLS]
+    in_same_col = [r + col for r in ROWS]
+    in_same_unit = unit_of_square(square)
+    peers = in_same_row + in_same_col + in_same_unit
+    if square in TOP_DIAGONAL:
+        peers += TOP_DIAGONAL
+    elif square in BOTTOM_DIAGONAL:
+        peers += BOTTOM_DIAGONAL
+    return list(set(filter(lambda s: s != square, peers))) # remove the square itself and duplicates
+
+def unit_of_square(square):
+    row, col = square
+    rows = next(rows for rows in ROWS_IN_THREE if row in rows)
+    cols = next(cols for cols in COLS_IN_THREE if col in cols)
+    return cross(rows, cols)
 
 def only_choice(values):
     pass
