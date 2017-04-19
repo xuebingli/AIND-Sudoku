@@ -100,7 +100,14 @@ def unit_of_square(square):
     return cross(rows, cols)
 
 def only_choice(values):
-    pass
+    for s in values.keys():
+        unit = unit_of_square(s)
+        unit_digits = map(lambda s: values[s], unit)
+        all_digits_in_unit = ''.join(unit_digits)
+        for d in values[s]:
+            if all_digits_in_unit.count(d) == 1: # digit only appears once in unit
+                assign_value(values, s, d)
+    return values
 
 def reduce_puzzle(values):
     pass

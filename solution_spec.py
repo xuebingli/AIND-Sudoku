@@ -35,6 +35,15 @@ class TestStandardSudoku(unittest.TestCase):
                                                          'H7', 'H8', 'H9',
                                                          'I7', 'I8', 'I9'])
 
+    def test_only_choice(self):
+        eliminated_values = self.values.copy()
+        eliminated_values['A4'] = '49'
+        eliminated_values['A6'] = '147'
+        eliminated_values['B5'] = '47'
+        eliminated_values['C5'] = '79'
+        processed_values = solution.only_choice(eliminated_values)
+        self.assertEqual(processed_values['A6'], '1')
+
 class TestDiagonalSudoku(unittest.TestCase):
     values = {
         'A1': DIGITS, 'A2': '5', 'A3': DIGITS, 'A4': DIGITS, 'A5': DIGITS, 'A6': DIGITS, 'A7': DIGITS, 'A8': DIGITS, 'A9': DIGITS,
