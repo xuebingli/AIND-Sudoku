@@ -89,35 +89,46 @@ def eliminate(values):
                 assign_value(values, s, values[s].replace(values[p], ''))
     return values
 
-def peers(square):
-    """
-    Find all peers for a given square.
-    """
-    row, col = square
-    in_same_row = [row + c for c in COLS]
-    in_same_col = [r + col for r in ROWS]
-    in_same_territory = territory_of_square(square)
-    peers = in_same_row + in_same_col + in_same_territory
-    if square in TOP_DIAGONAL:
-        peers += TOP_DIAGONAL
-    elif square in BOTTOM_DIAGONAL:
-        peers += BOTTOM_DIAGONAL
-    return list(set(filter(lambda s: s != square, peers))) # remove the square itself and duplicates
-
 def territory_of_square(square):
     row, col = square
     rows = next(rows for rows in ROWS_IN_THREE if row in rows)
     cols = next(cols for cols in COLS_IN_THREE if col in cols)
     return cross(rows, cols)
 
+def row_of_square(square):
+    row, _ = square
+    return [row + c for c in COLS]
+
+def col_of_square(square):
+    _, col = square
+    return [r + col for r in ROWS]
+
+def units_of_square(square):
+    units = [row_of_square(square), col_of_square(square), territory_of_square(square)]
+    if square in TOP_DIAGONAL:
+        units.append(TOP_DIAGONAL)
+    if square in BOTTOM_DIAGONAL:
+        units.append(BOTTOM_DIAGONAL)
+    return units
+
+def peers(square):
+    """
+    Find all peers for a given square.
+    """
+    units = units_of_square(square)
+    peers = [peer for unit in units for peer in unit]
+    return list(set(filter(lambda s: s != square, peers))) # remove the square itself and duplicates
+
 def only_choice(values):
-    for s in values.keys():
-        unit = territory_of_square(s)
-        unit_digits = map(lambda s: values[s], unit)
-        all_digits_in_unit = ''.join(unit_digits)
-        for d in values[s]:
-            if all_digits_in_unit.count(d) == 1: # digit only appears once in unit
-                assign_value(values, s, d)
+    unsolved_values = {s: ds for s, ds in values.items() if len(ds) > 1}
+    for s in unsolved_values.keys():
+        units = units_of_square(s)
+        for unit in units:
+            unit_digits = map(lambda s: values[s], unit)
+            all_digits_in_unit = ''.join(unit_digits)
+            for d in values[s]:
+                if all_digits_in_unit.count(d) == 1: # digit only appears once in unit
+                    assign_value(values, s, d)
     return values
 
 def solved_square_count(values):
