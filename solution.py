@@ -33,7 +33,8 @@ def assign_value(values, box, value):
     return values
 
 def are_twins(s1, s2):
-    return s1[0] == s2[0] or s1[1] == s2[1] or unit_of_square(s1) == unit_of_square(s2)
+    # The two squares are on the same row, same column, or the same territory
+    return s1[0] == s2[0] or s1[1] == s2[1] or territory_of_square(s1) == territory_of_square(s2)
 
 def naked_twins(values):
     """Eliminate values using the naked twins strategy.
@@ -95,15 +96,15 @@ def peers(square):
     row, col = square
     in_same_row = [row + c for c in COLS]
     in_same_col = [r + col for r in ROWS]
-    in_same_unit = unit_of_square(square)
-    peers = in_same_row + in_same_col + in_same_unit
+    in_same_territory = territory_of_square(square)
+    peers = in_same_row + in_same_col + in_same_territory
     if square in TOP_DIAGONAL:
         peers += TOP_DIAGONAL
     elif square in BOTTOM_DIAGONAL:
         peers += BOTTOM_DIAGONAL
     return list(set(filter(lambda s: s != square, peers))) # remove the square itself and duplicates
 
-def unit_of_square(square):
+def territory_of_square(square):
     row, col = square
     rows = next(rows for rows in ROWS_IN_THREE if row in rows)
     cols = next(cols for cols in COLS_IN_THREE if col in cols)
@@ -111,7 +112,7 @@ def unit_of_square(square):
 
 def only_choice(values):
     for s in values.keys():
-        unit = unit_of_square(s)
+        unit = territory_of_square(s)
         unit_digits = map(lambda s: values[s], unit)
         all_digits_in_unit = ''.join(unit_digits)
         for d in values[s]:
