@@ -82,11 +82,15 @@ def display(values):
             print('%-10s' % (digits), end='')
         print()
 
+def solved_squares(values):
+    return [s for s, ds in values.items() if len(ds) == 1]
+
 def eliminate(values):
-    for s in values.keys():
-        for p in peers(s):
-            if len(values[p]) == 1: # the peer is solved
-                assign_value(values, s, values[s].replace(values[p], ''))
+    solved = solved_squares(values)
+    for s in solved:
+        improvable_peers = [p for p in peers(s) if len(values[p]) > 1 and values[s] in values[p]]
+        for p in improvable_peers:
+            assign_value(values, p, values[p].replace(values[s], ''))
     return values
 
 def territory_of_square(square):
@@ -95,44 +99,26 @@ def territory_of_square(square):
     cols = next(cols for cols in COLS_IN_THREE if col in cols)
     return cross(rows, cols)
 
-def row_of_square(square):
-    row, _ = square
-    return [row + c for c in COLS]
-
-def col_of_square(square):
-    _, col = square
-    return [r + col for r in ROWS]
-
-def units_of_square(square):
-    units = [row_of_square(square), col_of_square(square), territory_of_square(square)]
-    if square in TOP_DIAGONAL:
-        units.append(TOP_DIAGONAL)
-    if square in BOTTOM_DIAGONAL:
-        units.append(BOTTOM_DIAGONAL)
-    return units
+rows = [[r + c for c in COLS] for r in ROWS]
+cols = [[r + c for r in ROWS] for c in COLS]
+territories = [cross(rows, cols) for rows in ROWS_IN_THREE for cols in COLS_IN_THREE]
+unit_list = rows + cols + territories + [TOP_DIAGONAL] + [BOTTOM_DIAGONAL]
 
 def peers(square):
     """
     Find all peers for a given square.
     """
-    units = units_of_square(square)
+    units = [unit for unit in unit_list if square in unit]
     peers = [peer for unit in units for peer in unit]
     return list(set(filter(lambda s: s != square, peers))) # remove the square itself and duplicates
 
 def only_choice(values):
-    unsolved_values = {s: ds for s, ds in values.items() if len(ds) > 1}
-    for s in unsolved_values.keys():
-        units = units_of_square(s)
-        for unit in units:
-            unit_digits = map(lambda s: values[s], unit)
-            all_digits_in_unit = ''.join(unit_digits)
-            for d in values[s]:
-                if all_digits_in_unit.count(d) == 1: # digit only appears once in unit
-                    assign_value(values, s, d)
+    for unit in unit_list:
+        for d in DIGITS:
+            appearances = [s for s in unit if d in values[s]]
+            if len(appearances) == 1:
+                assign_value(values, appearances[0], d)
     return values
-
-def solved_square_count(values):
-    return len([s for s, ds in values.items() if len(ds) == 1])
 
 def is_unsolvable(values):
     return any(len(ds) == 0 for ds in values.values())
@@ -140,15 +126,15 @@ def is_unsolvable(values):
 def reduce_puzzle(values):
     keep_reducing = True
     while keep_reducing:
-        solved_square_count_before = solved_square_count(values)
+        solved_square_count_before = len(solved_squares(values))
         values = eliminate(values)
         values = only_choice(values)
-        solved_square_count_after = solved_square_count(values)
+        solved_square_count_after = len(solved_squares(values))
         keep_reducing = solved_square_count_before < solved_square_count_after
     return values
 
 def is_solved(values):
-    return all(len(ds) == 1 for ds in values.values())
+    return len(solved_squares(values)) == 81
 
 def unsolved_square_with_least_possibilities(values):
     _, square = min([(len(ds), s) for s, ds in values.items() if len(ds) > 1])
