@@ -129,6 +129,7 @@ def reduce_puzzle(values):
         solved_square_count_before = len(solved_squares(values))
         values = eliminate(values)
         values = only_choice(values)
+        values = naked_twins(values)
         solved_square_count_after = len(solved_squares(values))
         keep_reducing = solved_square_count_before < solved_square_count_after
     return values
