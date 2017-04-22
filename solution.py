@@ -143,15 +143,14 @@ def unsolved_square_with_least_possibilities(values):
 
 def search(values):
     values = reduce_puzzle(values)
+    if is_unsolvable(values): return False
     if is_solved(values): return values
-    elif is_unsolvable(values): return False
-    else:
-        s = unsolved_square_with_least_possibilities(values)
-        for d in values[s]:
-            possible_values = values.copy()
-            assign_value(possible_values, s, d)
-            answer_values = search(possible_values)
-            if answer_values: return answer_values
+    s = unsolved_square_with_least_possibilities(values)
+    for d in values[s]:
+        possible_values = values.copy()
+        assign_value(possible_values, s, d)
+        answer_values = search(possible_values)
+        if answer_values: return answer_values
 
 def solve(grid):
     """
