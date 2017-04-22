@@ -1,6 +1,6 @@
 DIGITS = '123456789'
-ROWS = 'ABCDEFGHI'
-COLS = '123456789'
+ROW_LETTERS = 'ABCDEFGHI'
+COL_DIGITS = '123456789'
 
 def cross(A, B):
     "Cross product of elements in A and elements in B."
@@ -9,11 +9,11 @@ def cross(A, B):
 def in_three(items):
     return [items[i:i+3] for i in range(0, len(items), 3)]
 
-SQUARES = cross(ROWS, COLS)
-TOP_DIAGONAL = list(filter(lambda s: ROWS.index(s[0]) == COLS.index(s[1]), SQUARES))
-BOTTOM_DIAGONAL = list(filter(lambda s: ROWS.index(s[0]) + COLS.index(s[1]) == 8, SQUARES))
-COLS_IN_THREE = in_three(COLS)
-ROWS_IN_THREE = in_three(ROWS)
+SQUARES = cross(ROW_LETTERS, COL_DIGITS)
+TOP_DIAGONAL = list(filter(lambda s: ROW_LETTERS.index(s[0]) == COL_DIGITS.index(s[1]), SQUARES))
+BOTTOM_DIAGONAL = list(filter(lambda s: ROW_LETTERS.index(s[0]) + COL_DIGITS.index(s[1]) == 8, SQUARES))
+COL_DIGITS_IN_THREE = in_three(COL_DIGITS)
+ROW_LETTERS_IN_THREE = in_three(ROW_LETTERS)
 
 assignments = []
 
@@ -95,25 +95,25 @@ def eliminate(values):
 
 def territory_of_square(square):
     row, col = square
-    rows = next(rows for rows in ROWS_IN_THREE if row in rows)
-    cols = next(cols for cols in COLS_IN_THREE if col in cols)
+    rows = next(rows for rows in ROW_LETTERS_IN_THREE if row in rows)
+    cols = next(cols for cols in COL_DIGITS_IN_THREE if col in cols)
     return cross(rows, cols)
 
-rows = [[r + c for c in COLS] for r in ROWS]
-cols = [[r + c for r in ROWS] for c in COLS]
-territories = [cross(rows, cols) for rows in ROWS_IN_THREE for cols in COLS_IN_THREE]
-unit_list = rows + cols + territories + [TOP_DIAGONAL] + [BOTTOM_DIAGONAL]
+ROWS = [[r + c for c in COL_DIGITS] for r in ROW_LETTERS]
+COLS = [[r + c for r in ROW_LETTERS] for c in COL_DIGITS]
+TERRITORIES = [cross(rows, cols) for rows in ROW_LETTERS_IN_THREE for cols in COL_DIGITS_IN_THREE]
+UNIT_LIST = ROWS + COLS + TERRITORIES + [TOP_DIAGONAL, BOTTOM_DIAGONAL]
 
 def peers(square):
     """
     Find all peers for a given square.
     """
-    units = [unit for unit in unit_list if square in unit]
+    units = [unit for unit in UNIT_LIST if square in unit]
     peers = [peer for unit in units for peer in unit]
     return list(set(filter(lambda s: s != square, peers))) # remove the square itself and duplicates
 
 def only_choice(values):
-    for unit in unit_list:
+    for unit in UNIT_LIST:
         for d in DIGITS:
             appearances = [s for s in unit if d in values[s]]
             if len(appearances) == 1:
