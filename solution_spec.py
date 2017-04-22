@@ -27,13 +27,9 @@ class TestDiagonalSudoku(unittest.TestCase):
     def test_in_three(self):
         self.assertEqual(solution.in_three('ABCDEFGHI'), ['ABC', 'DEF', 'GHI'])
 
-    def test_territory_of_square(self):
-        self.assertEqual(solution.territory_of_square('E2'), ['D1', 'D2', 'D3',
-                                                              'E1', 'E2', 'E3',
-                                                              'F1', 'F2', 'F3'])
-        self.assertEqual(solution.territory_of_square('I9'), ['G7', 'G8', 'G9',
-                                                              'H7', 'H8', 'H9',
-                                                              'I7', 'I8', 'I9'])
+    def test_in_same_territory(self):
+        self.assertTrue(solution.in_same_territory('E2', 'D1'))
+        self.assertFalse(solution.in_same_territory('E2', 'A1'))
 
     def test_is_unsolvable(self):
         unsolvable_values = self.values.copy()

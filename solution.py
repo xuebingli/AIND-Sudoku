@@ -31,7 +31,7 @@ def assign_value(values, box, value):
 
 def are_twins(s1, s2):
     # The two squares are on the same row, same column, or the same territory
-    return s1[0] == s2[0] or s1[1] == s2[1] or territory_of_square(s1) == territory_of_square(s2)
+    return s1[0] == s2[0] or s1[1] == s2[1] or in_same_territory(s1, s2)
 
 def naked_twins(values):
     """Eliminate values using the naked twins strategy.
@@ -91,12 +91,6 @@ def eliminate(values):
             assign_value(values, p, values[p].replace(values[s], ''))
     return values
 
-def territory_of_square(square):
-    row, col = square
-    rows = next(rows for rows in ROW_LETTERS_IN_THREE if row in rows)
-    cols = next(cols for cols in COL_DIGITS_IN_THREE if col in cols)
-    return cross(rows, cols)
-
 ROWS = [[r + c for c in COL_DIGITS] for r in ROW_LETTERS]
 COLS = [[r + c for r in ROW_LETTERS] for c in COL_DIGITS]
 TERRITORIES = [cross(rows, cols) for rows in ROW_LETTERS_IN_THREE for cols in COL_DIGITS_IN_THREE]
@@ -104,6 +98,9 @@ TOP_DIAGONAL = [r + c for r, c in zip(ROW_LETTERS, COL_DIGITS)]
 BOTTOM_DIAGONAL = [r + c for r, c in zip(ROW_LETTERS, list(reversed(COL_DIGITS)))]
 DIAGONALS = [TOP_DIAGONAL, BOTTOM_DIAGONAL]
 UNIT_LIST = ROWS + COLS + TERRITORIES + DIAGONALS
+
+def in_same_territory(s1, s2):
+    return any(territory for territory in TERRITORIES if s1 in territory and s2 in territory)
 
 def peers(square):
     """
