@@ -9,9 +9,6 @@ def cross(A, B):
 def in_three(items):
     return [items[i:i+3] for i in range(0, len(items), 3)]
 
-SQUARES = cross(ROW_LETTERS, COL_DIGITS)
-TOP_DIAGONAL = list(filter(lambda s: ROW_LETTERS.index(s[0]) == COL_DIGITS.index(s[1]), SQUARES))
-BOTTOM_DIAGONAL = list(filter(lambda s: ROW_LETTERS.index(s[0]) + COL_DIGITS.index(s[1]) == 8, SQUARES))
 COL_DIGITS_IN_THREE = in_three(COL_DIGITS)
 ROW_LETTERS_IN_THREE = in_three(ROW_LETTERS)
 
@@ -66,7 +63,8 @@ def grid_values(grid):
             Values: The value in each box, e.g., '8'. If the box has no value, then the value will be '123456789'.
     """
     possibility_grid = [DIGITS if d == '.' else d for d in list(grid)]
-    return dict(zip(SQUARES, possibility_grid))
+    squares = cross(ROW_LETTERS, COL_DIGITS)
+    return dict(zip(squares, possibility_grid))
 
 def display(values):
     """
@@ -102,7 +100,10 @@ def territory_of_square(square):
 ROWS = [[r + c for c in COL_DIGITS] for r in ROW_LETTERS]
 COLS = [[r + c for r in ROW_LETTERS] for c in COL_DIGITS]
 TERRITORIES = [cross(rows, cols) for rows in ROW_LETTERS_IN_THREE for cols in COL_DIGITS_IN_THREE]
-UNIT_LIST = ROWS + COLS + TERRITORIES + [TOP_DIAGONAL, BOTTOM_DIAGONAL]
+TOP_DIAGONAL = [r + c for r, c in zip(ROW_LETTERS, COL_DIGITS)]
+BOTTOM_DIAGONAL = [r + c for r, c in zip(ROW_LETTERS, list(reversed(COL_DIGITS)))]
+DIAGONALS = [TOP_DIAGONAL, BOTTOM_DIAGONAL]
+UNIT_LIST = ROWS + COLS + TERRITORIES + DIAGONALS
 
 def peers(square):
     """
