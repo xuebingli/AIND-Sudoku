@@ -88,7 +88,7 @@ def solved_squares(values):
 def eliminate(values):
     solved = solved_squares(values)
     for s in solved:
-        improvable_peers = [p for p in peers(s) if len(values[p]) > 1 and values[s] in values[p]]
+        improvable_peers = [p for p in peers(s) if values[s] in values[p]]
         for p in improvable_peers:
             assign_value(values, p, values[p].replace(values[s], ''))
     return values
